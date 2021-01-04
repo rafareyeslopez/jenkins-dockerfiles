@@ -1,0 +1,27 @@
+# Landing pages workflow to run some selenium tests with python to verify landing pages are correct
+
+name: Landing Pages CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag vgn-landing
+
+    - name: Selenium Test
+      run: |
+        pip install selenium
+        docker run -d -p 80:80 vgn-landing
+        python ./landing-pages/test.py
